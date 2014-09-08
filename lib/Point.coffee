@@ -37,7 +37,7 @@ module.exports = exports = class Point extends require("./Tuple")
 
 [ "add", "subtract", "multiply", "divide", "modulus"
 ].forEach((method) -> 
-	Point[method] = Util.arrayify(Point[method])
-	Point.prototype[method] = (points...) -> @constructor[method](@, points...)
+	@[method] = Util.arrayify(@[method])
+	@::[method] = (points...) -> @constructor[method](@, points...)
 )
 
