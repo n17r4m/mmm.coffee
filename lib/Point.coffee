@@ -1,6 +1,7 @@
 Util = require("./Util")
+Tuple = require("./Tuple")
 
-module.exports = exports = class Point extends require("./Tuple")
+module.exports = exports = class Point extends Tuple
 	constructor: (args...) -> 
 		super(args...)
 		
@@ -14,6 +15,9 @@ module.exports = exports = class Point extends require("./Tuple")
 		scale = if current isnt 0 then distance/current else 0
 		new @constructor(@map (p) -> scale * p)
 
+	dot: (p) -> @constructor.dot(@, p)
+	cross: (p) -> @constructor.cross(@, p)
+		
 	@debug: false
 	@strict: false
 	
@@ -29,15 +33,22 @@ module.exports = exports = class Point extends require("./Tuple")
 	@divide: (points...) -> @op(((a, p) -> a / p), points...)
 	@modulus: (points...) -> @op(((a, p) -> a % p), points...)
 
+	@dot: (p1, p2) -> 
+		@op(((a, p) -> a * p), p1, p2).reduce(((sum, ab) -> sum + ab), 0)
+		
+	@cross: (p1, p2) -> 
+		@op(((a, p) -> a * p), p1, p2).reduce(((sum, ab) -> sum - ab), 0)
+		
 	@normalizer: (distance = 1) -> Util.arrayify(
 		(points...) -> points.map (point) -> point.normalize(distance)
 	)
 
 
 
-[ "add", "subtract", "multiply", "divide", "modulus"
-].forEach((method) -> 
-	@[method] = Util.arrayify(@[method])
+[ "add", "subtract", "multiply", "divide", "modulus",
+	# "dot", "cross"
+].forEach(((method) -> 
+	@[method] = Tuple.arrayify(@[method])
 	@::[method] = (points...) -> @constructor[method](@, points...)
-)
+), Point)
 

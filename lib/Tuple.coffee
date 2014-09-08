@@ -30,11 +30,19 @@ module.exports = exports = class Tuple extends Array
 	@max: (points...) -> @op(((a, p) -> Math.max(a, p)), points...)
 	@min: (points...) -> @op(((a, p) -> Math.min(a, p)), points...)
 	@average: (points...) -> new @(@add(points...).map((p) -> p / points.length))
-
+	
+	
+	@arrayify: (fn) -> 
+		if typeof fn is 'function' then return (args...) ->
+			if args.length is 1 and Array.isArray(args[0]) and not Tuple.isTuple(args[0])
+				args = arguments[0]
+			return fn.apply(@, args)
+		else return fn
+	
 [
 	"equals", "max", "min", "average"
 ].forEach(((method) -> 
-	@[method] = Util.arrayify(@[method])
+	@[method] = @arrayify(@[method])
 	@::[method] = (points...) -> @constructor[method](@, points...)
 ), Tuple)
 
