@@ -1,4 +1,4 @@
-Util = require("./Util")
+
 Point = require("./Point")
 
 module.exports = exports = class Line extends Point

@@ -17,6 +17,7 @@ module.exports = exports = root = (options = {}) ->
 
 [ require("./lib/Tuple"),
 	require("./lib/Point"),
+	require("./lib/Vector"),
 	require("./lib/Line")
 
 ].forEach (classdef) -> root[classdef.name] = classdef

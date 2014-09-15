@@ -38,3 +38,7 @@ unless typeof Array::zip is 'function'
 unless typeof String::trim is 'function'
   String::trim = -> @replace(/^\s+|\s+$/g, '')
 
+# Numbers
+unless typeof Number.isNumber is 'function'
+	Number.isNumber = (n) -> !isNaN(parseFloat(n)) && isFinite(n)
+

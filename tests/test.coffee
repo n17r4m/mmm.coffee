@@ -1,11 +1,10 @@
 
+options = {debug: false, strict: true}
+console.info("Loading mmm.coffee library", options)
+require("../")()
 
-require("../")({debug: false, strict: false})
 
-p1 = new Point(3)
-p2 = new Point(4,2)
-p3 = new Point([1,2,7])
-# p4 = new Point({x:1, y:2, z:3, a:4})
+p1 = new Point(2,3)
 
-console.info p2.cross(p2)
-#p2.dot(p3)
+# needs more testing
+console.info(p1.multiply(2))

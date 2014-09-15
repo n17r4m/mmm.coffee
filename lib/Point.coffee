@@ -1,4 +1,3 @@
-Util = require("./Util")
 Tuple = require("./Tuple")
 
 module.exports = exports = class Point extends Tuple
@@ -8,47 +7,57 @@ module.exports = exports = class Point extends Tuple
 	origin: -> @nil()
 	negate: -> new @constructor(@map (p) -> -p)
 
-	distance: (point) -> @constructor.distance(@, point)
+	distance: (points...) -> 
+		cls = @constructor
+		unless points.length > 0 then points.unshift(new Point())
+		points.unshift(@)
+		points.reduce(((sum, p, i) -> sum + cls.distance(p, points[i+1]||p)), 0)
 
 	normalize: (distance = 1) ->
 		current = @distance()
 		scale = if current isnt 0 then distance/current else 0
 		new @constructor(@map (p) -> scale * p)
 
-	dot: (p) -> @constructor.dot(@, p)
-	cross: (p) -> @constructor.cross(@, p)
-		
 	@debug: false
 	@strict: false
 	
 	@isPoint: (p) -> p instanceof @
 
-	@distance: (p1, p2 = p1.origin()) ->
-		Math.sqrt([p1, p2].zip().reduce(((sum, zip) ->
+
+
+
+	@distance: (points...) ->
+		# TODO: fixeme for length > 2
+		console.info "length", points.length
+		points = points.map (p) => new @(p)
+		if points.length is 0 then return 0
+		if points.length is 1 then points.push(points[0])
+		Math.sqrt(points.zip().reduce(((sum, zip) ->
 			sum + Math.pow(zip[1] - zip[0], 2)), 0))
 
-	@add: (points...) -> @op(((a, p) -> a + p), points...)
-	@subtract: (points...) -> @op(((a, p) -> a - p), points...)
-	@multiply: (points...) -> @op(((a, p) -> a * p), points...)
-	@divide: (points...) -> @op(((a, p) -> a / p), points...)
-	@modulus: (points...) -> @op(((a, p) -> a % p), points...)
 
-	@dot: (p1, p2) -> 
-		@op(((a, p) -> a * p), p1, p2).reduce(((sum, ab) -> sum + ab), 0)
+	@dot: (p1, p2) -> @op(((a, p) -> a * p), p1, p2).reduce(((sum, ab) -> sum + ab), 0)
+	@cross: (p1, p2) -> @op(((a, p) -> a * p), p1, p2).reduce(((sum, ab) -> sum - ab), 0)
 		
-	@cross: (p1, p2) -> 
-		@op(((a, p) -> a * p), p1, p2).reduce(((sum, ab) -> sum - ab), 0)
+	@scale: (p1, p2) ->  @dot(p1, p2) / @dot(p1, p2)
+	
+	@project: (p1, p2) ->
+		if (p2 = new @(p2)).isZero() then return p2.zero()
+		@multiply(p2, @scale(p1, p2))
 		
-	@normalizer: (distance = 1) -> Util.arrayify(
-		(points...) -> points.map (point) -> point.normalize(distance)
-	)
+	@Normalizer: (distance = 1) -> 
+		#TODO: this is presently broken for 1arg inputs.
+		@arrayify (points...) =>
+			console.info @name 
+			points.map (point) =>
+				console.info point 
+				(new @(point)).normalize(distance)
 
 
 
-[ "add", "subtract", "multiply", "divide", "modulus",
-	# "dot", "cross"
+[ "add", "subtract", "multiply", "divide", "modulus", "dot", "cross"
 ].forEach(((method) -> 
-	@[method] = Tuple.arrayify(@[method])
+	# copy in as instance methods
 	@::[method] = (points...) -> @constructor[method](@, points...)
 ), Point)
 
