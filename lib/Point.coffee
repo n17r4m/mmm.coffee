@@ -4,60 +4,38 @@ module.exports = exports = class Point extends Tuple
 	constructor: (args...) -> 
 		super(args...)
 		
-	origin: -> @nil()
-	negate: -> new @constructor(@map (p) -> -p)
+	origin: -> @zero()
+	negate: -> @multiply(-1)
 
-	distance: (points...) -> 
-		cls = @constructor
-		unless points.length > 0 then points.unshift(new Point())
+	dist: (points...) -> 
 		points.unshift(@)
-		points.reduce(((sum, p, i) -> sum + cls.distance(p, points[i+1]||p)), 0)
+		@constructor.dist(points)
 
-	normalize: (distance = 1) ->
-		current = @distance()
-		scale = if current isnt 0 then distance/current else 0
-		new @constructor(@map (p) -> scale * p)
+	normalize: (norm = 1) -> @multiply(norm / @dist())
 
 	@debug: false
 	@strict: false
 	
 	@isPoint: (p) -> p instanceof @
 
-
-
-
-	@distance: (points...) ->
-		# TODO: fixeme for length > 2
-		console.info "length", points.length
-		points = points.map (p) => new @(p)
+	@dist: @arrayify (points...) ->
 		if points.length is 0 then return 0
-		if points.length is 1 then points.push(points[0])
-		Math.sqrt(points.zip().reduce(((sum, zip) ->
-			sum + Math.pow(zip[1] - zip[0], 2)), 0))
-
-
-	@dot: (p1, p2) -> @op(((a, p) -> a * p), p1, p2).reduce(((sum, ab) -> sum + ab), 0)
-	@cross: (p1, p2) -> @op(((a, p) -> a * p), p1, p2).reduce(((sum, ab) -> sum - ab), 0)
+		if points.length is 1 then points.unshift(points[0].map (p) -> 0)
+		sum = 0
+		p2 = points.shift()
+		console.info p1, p2
+		while (p1 = p2) and (p2 = points.shift())
+			sum += @dist2(p1, p2)
+		return sum
 		
-	@scale: (p1, p2) ->  @dot(p1, p2) / @dot(p1, p2)
-	
-	@project: (p1, p2) ->
-		if (p2 = new @(p2)).isZero() then return p2.zero()
-		@multiply(p2, @scale(p1, p2))
-		
-	@Normalizer: (distance = 1) -> 
-		#TODO: this is presently broken for 1arg inputs.
+	@dist2: (p1, p2) ->
+		Math.sqrt([p1, p2].zip().reduce(((sum, pair) ->
+			sum + Math.pow(pair[1] - pair[0], 2)), 0))
+
+	@Normalizer: (norm = 1, multi = true) -> 
+		if typeof norm is 'boolean' then [multi = norm, norm = 1]
 		@arrayify (points...) =>
-			console.info @name 
-			points.map (point) =>
-				console.info point 
-				(new @(point)).normalize(distance)
+			normalized = points.map (point) => (new @(point)).normalize(norm)
+			if multi then normalized else normalized[0]
 
-
-
-[ "add", "subtract", "multiply", "divide", "modulus", "dot", "cross"
-].forEach(((method) -> 
-	# copy in as instance methods
-	@::[method] = (points...) -> @constructor[method](@, points...)
-), Point)
 

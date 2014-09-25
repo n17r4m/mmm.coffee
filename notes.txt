@@ -1,0 +1,13 @@
+
+
+Examine Parrelelogram as x+y vectors...
+
+ (x+y) = (y+x)
+ 
+     /\
+   x/ y\
+   /    \
+   \    /
+   y\ x/
+     \/
+
