@@ -1,29 +1,42 @@
 Tuple = require("./Tuple")
+Vector = require("./Vector")
 
-
-module.exports = exports = class Matrix extends Array
+module.exports = exports = class Matrix extends Tuple
 	constructor: (mx = [[]]) -> @push.apply(@, mx.map (row) -> new Tuple(row))
 	
-	row: (n = 1) -> 
-		if n > 0 then return new Tuple(@[n - 1])
-		else if n < 0 then return new Tuple(@[@rows - n])
-		else return new Tuple(@[0])
+	@getter 'height', -> @length
+	@getter 'width', -> @[0].length
+	@getter 'size', -> "#{@width}x#{height}"
+	
+	toArray: -> @map (row) -> row.toArray()
+	toString: -> "[#{@size} Matrix]"
+	valueOf: -> @toArray()
+	
+	@isMatrix: (mx) -> mx instanceof Matrix
+	
+	@row: (mx, n = 1) -> 
+		if n > 0 then return new Tuple(mx[n - 1])
+		else if n < 0 then return new Tuple(mx[mx.length - n])
+		else return new Tuple(mx[0])
 		
-	col: (n) ->
-		if n > 0 then return new Tuple(@map (row) -> row[n - 1])
-		else if n < 0 then return new Tuple(@map (row) -> row[@rows - n])
-		else return new Tuple(@map (row) -> row[0])
+	@col: (mx, n) ->
+		if n > 0 then return new Tuple(mx.map (row) -> row[n - 1])
+		else if n < 0 then return new Tuple(mx.map (row) -> row[mx[0].length - n])
+		else return new Tuple(mx.map (row) -> row[0])
 		
+	@rows: (mx) -> mx
+	@cols: (mx) -> cols = @col(mx, n) for n in [1...mx.length]
 	
-	
-	rref: -> @constructor.rref(@)
-	
-	@getter 'rows', -> @length
-	@getter 'cols', -> @[0].length
-	
+	@add: (m1, m2) -> new @(m1.map (row, r) -> row.map (m, c) -> m + m2[r][c])
+	@subtract: (m1, m2) -> new @(m1.map (row, r) -> row.map (m, c) -> m - m2[r][c])
+	@multiply: (m1, m2) -> 
+		if Number.isNumber(m2) then new @(m1.map (row) -> row.map (m) -> m * m2)
+		else new @(m1.map (row) => @cols(m2).map (col) -> col.dot(row))
+				
 	@rref: (mx) ->		
+		# https://github.com/substack/rref
 		mx = new @(mx)
-		[lead, rows, cols] = [0, mx.rows, mx.cols]
+		[lead, rows, cols] = [0, mx.height, mx.width]
 		for k in [0...rows]
 			if cols <= lead then return
 			i = k
@@ -43,4 +56,9 @@ module.exports = exports = class Matrix extends Array
 					mx[i][j] -= val * mx[k][j]
 			lead++
 		return mx
+		
+["row", "col", "rows", "cols", "add", "subtract", "multiply", "rref"]
+.forEach(((method) ->
+	@::[method] = (args...) -> @constructor[method](@, args...)
+), Matrix)
 

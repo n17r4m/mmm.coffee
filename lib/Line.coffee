@@ -36,5 +36,10 @@ module.exports = exports = class Line extends Point
 	
 	translate: (point) -> @point.add(point)
 	
-	@isArrow: (a) -> a instanceof Arrow
+	@isLine: (a) -> a instanceof Line
+	
+	@intersection: (lines...) ->
+		throw new Error("Line intersection tests.. NYI")
+	
+	
 	

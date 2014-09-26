@@ -1,4 +1,17 @@
 
+# Math
+
+unless typeof Math.radians is 'function'
+	Object.defineProperty(Math, "radians", {
+		value: (degrees = 360) -> (Math.PI * degrees) / 180
+	})
+
+unless typeof Math.degrees is 'function'
+	Object.defineProperty(Math, "degrees", {
+		value: (radians = 2*Math.PI) -> (180 * radians) / Math.PI
+	})
+
+
 # Functions
   
 unless typeof Function::property is 'function'

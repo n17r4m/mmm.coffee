@@ -91,14 +91,13 @@
 	}
 
 
-
-
 	@link: (vertexArray) ->
 		vertexArray.forEach (v, i, vs) -> v.link(vs[(i+1) % vs.length])
 		return vertexArray[0]
 
 	@coords: (coords = [[0,0], [1,0], [1,1]]) -> @link(coords.map (c) -> new Vertex(c))
 
-	@rect: (r = new Rect(0, 0, 1, 1)) -> @link([new Vertex(r.tl), new Vertex(r.tr), new Vertex(r.br), new Vertex(r.bl)])
+	@rect: (r = new Rect(0, 0, 1, 1)) -> 
+		@link([new Vertex(r.tl), new Vertex(r.tr), new Vertex(r.br), new Vertex(r.bl)])
 
 

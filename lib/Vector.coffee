@@ -9,8 +9,6 @@ module.exports = exports = class Vector extends Point
 	unit: -> @divide(@norm())
 
 	angle: (v = @constructor.standard(@length)) -> @constructor.angle(@, v)
-
-	dot: (v = @) -> @constructor.dot(@, v)
 	
 	cross: (v = @) -> @constructor.cross(@, v)
 	
@@ -35,7 +33,6 @@ module.exports = exports = class Vector extends Point
 
 	@angle: (v, u) -> Math.acos(@dot(v, u) / (@norm(v) * @norm(u)))
 
-	@dot: (v, u) -> @op(((vn, un) -> vn * un), v, u).reduce(((sum, vu) -> sum + vu), 0)
 
 	@cross: (v, u) -> 
 		@perpendicularTo(v, u).multiply(

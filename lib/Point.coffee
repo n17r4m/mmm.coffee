@@ -11,6 +11,9 @@ module.exports = exports = class Point extends Tuple
 		points.unshift(@)
 		@constructor.dist(points)
 
+	rotate: (radians = 0, point = @zero()) ->
+		@constructor.rotate(@, radians, point)
+
 	normalize: (norm = 1) -> @multiply(norm / @dist())
 
 	@debug: false
@@ -32,6 +35,19 @@ module.exports = exports = class Point extends Tuple
 		Math.sqrt([p1, p2].zip().reduce(((sum, pair) ->
 			sum + Math.pow(pair[1] - pair[0], 2)), 0))
 
+	@rotate: (point, radians = 0, around = point.zero()) ->
+		switch point.length
+			when 0 then point
+			when 1 then point
+			when 2 
+				[x, y] = [point[0] - around[0], point[1] - around[1]]
+				xRotated = Math.cos(radians)*x - Math.sin(radians)*y
+				yRotated = Math.sin(radians)*x + Math.cos(radians)*y
+				new @(xRotated + point[0], yRotated + point[1])		
+			when 3 then throw new TypeError("NYI: >= 3D rotations")
+			when 4 then throw new TypeError("NYI: >= 4D rotations")
+			else throw new TypeError("NYI: >= 4D rotations")
+    
 	@Normalizer: (norm = 1, multi = true) -> 
 		if typeof norm is 'boolean' then [multi = norm, norm = 1]
 		@arrayify (points...) =>

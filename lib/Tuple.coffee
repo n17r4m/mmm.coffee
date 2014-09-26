@@ -33,6 +33,7 @@ module.exports = exports = class Tuple extends Array
 	@multiply: @arrayify (tuples...) -> @op(((a, p) -> a * p), tuples...)
 	@divide: @arrayify (tuples...) -> @op(((a, p) -> a / p), tuples...)
 	@modulus: @arrayify (tuples...) -> @op(((a, p) -> a % p), tuples...)
+	@dot: (v, u) -> @op(((vn, un) -> vn * un), v, u).reduce(((sum, vu) -> sum + vu), 0)
 
 	@zero: (dimensions = 1) -> new @(0 for [1..dimensions])
 	
@@ -72,21 +73,21 @@ module.exports = exports = class Tuple extends Array
 	@absi: (point, i = 0) -> p = new @(point); p[i] = Math.abs(p[i]); p; 	
 
 	
-[ "add", "subtract", "multiply", "divide", "modulus"
-].forEach(((method) ->
+[ "add", "subtract", "multiply", "divide", "modulus", "dot"]
+.forEach(((method) ->
 	@::[method] = (tuples...) -> @constructor[method](@, tuples...)
 ), Tuple)
 	
-[ "equals", "max", "min", "average"
-].forEach(((method) -> 
+[ "equals", "max", "min", "average"]
+.forEach(((method) -> 
 	solo = @::[method]
 	@::[method] = (tuples...) ->
 		if tuples.length is 0 then solo.call(@)
 		else @constructor[method](@, tuples...)
 ), Tuple)
 
-[ "fix", "toFixed", "floor", "floori", "ceil", "ceili", "round", "roundi", "abs", "absi"
-].forEach(((method) -> 
+[ "fix", "toFixed", "floor", "floori", "ceil", "ceili", "round", "roundi", "abs", "absi"]
+.forEach(((method) -> 
 	@::[method] = (i) -> @constructor[method](@, i)
 ), Tuple)
 
