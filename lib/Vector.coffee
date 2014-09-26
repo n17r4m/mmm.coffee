@@ -8,24 +8,53 @@ module.exports = exports = class Vector extends Point
 
 	unit: -> @divide(@norm())
 
-	dot: (v) -> @constructor.dot(@, v)
+	angle: (v = @constructor.standard(@length)) -> @constructor.angle(@, v)
+
+	dot: (v = @) -> @constructor.dot(@, v)
+	
+	cross: (v = @) -> @constructor.cross(@, v)
 	
 	project: (v) -> @constructor.project(@, v)
 
 	parallel: (v) -> 
 		x = (s = @divide(v).deNaN()).max()
-		not s.some (t) => t isnt x
+		not s.some (t) => Math.abs(t) - Math.abs(x) > @constructor.tolerance
 		
-	perpendicular: (v) -> @dot(v) is 0
+	
+	perpendicular: (v) -> -@constructor.tolerance < @dot(v) < @constructor.tolerance 
+	
+	perpendicularTo: (v) -> @constructor.perpendicularTo(@, v)
 
 	intersects: (v) -> not @parallel(v)
 
 	hyperspace: -> throw new Error("NYI: Surface perpedicular to this vector")
 
+	@norm: (v) -> @dist(v)
+	
+	@unit: (v) -> (new @(v)).unit()
+
+	@angle: (v, u) -> Math.acos(@dot(v, u) / (@norm(v) * @norm(u)))
+
 	@dot: (v, u) -> @op(((vn, un) -> vn * un), v, u).reduce(((sum, vu) -> sum + vu), 0)
 
-	#wrong	@cross: (p1, p2) -> @op(((a, p) -> a * p), p1, p2).reduce(((sum, ab) -> sum - ab), 0)
+	@cross: (v, u) -> 
+		@perpendicularTo(v, u).multiply(
+			@norm(v) * @norm(u) * Math.sin(@angle(v, u))
+		)
 
+	@perpendicularTo: (u, v) ->
+		[u, v] = [new Tuple(u), new Tuple(v)]
+		[u, v].forEach (x) -> x.push(0)
+		p = new Vector(
+			Matrix.rref([u, v]).map (row, i) -> 
+				row.reduce(((sum, col) -> sum - col), 1)
+		)
+		
+		while p.length < u.length - 1
+			p.push(1)	
+		return p.unit()
+    
+		
 	@project: (a, x) ->
 		[a, x] = [new @(a), new @(x)]
 		if x.isZero() then return a.zero()

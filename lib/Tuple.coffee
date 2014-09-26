@@ -1,16 +1,13 @@
 
 module.exports = exports = class Tuple extends Array
 	constructor: (array) ->
-		if @constructor.isTuple(array)
-			@push.apply @, array.toArray()
-		else if @constructor.isArray(array)
-			@push.apply @, array
-		else
-			@push.apply @, arguments
+		if @constructor.isTuple(array) then @push.apply @, array.toArray()
+		else if @constructor.isArray(array) then @push.apply @, array
+		else @push.apply @, arguments
 		return @
 
 	zero: -> new @constructor(@map -> 0)
-	isZero: -> @every (t) -> t is 0
+	isZero: -> not @some (t) -> t > @constructor.tolerance
 	deNaN: -> new @constructor(@map (t) -> if isNaN(t) then null else t)
 
 	toArray: -> @slice()
@@ -20,17 +17,15 @@ module.exports = exports = class Tuple extends Array
 	max: -> Math.max.apply([], @)
 	min: -> Math.min.apply([], @)
 
-	@arrayify: (fn) -> 
-		if typeof fn is 'function' then return (args...) ->
-			if args.length is 1 and 
-					Array.isArray(args[0]) and 
-					Tuple.isArray(args[0][0])
-					
-				args = arguments[0]
-			return fn.apply(@, args)
-		else return fn
+	@tolerance: 1e-14
 
-	@isArray: (a) -> a instanceof Array
+	@arrayify: (fn) -> (args...) ->
+		if args.length is 1 and Array.isArray(args[0]) and Tuple.isArray(args[0][0])
+			args = arguments[0]
+		return fn.apply(@, args)
+
+	@isArray: (a) -> a instanceof Array # note that this is subtley different than
+	                                    # using Array.isArray(a)
 	@isTuple: (t) -> t instanceof @
 
 	@add: @arrayify (tuples...) -> @op(((a, p) -> a + p), tuples...)
@@ -56,15 +51,19 @@ module.exports = exports = class Tuple extends Array
 		unless @strict then result.deNaN() else result
 
 	@equals: @arrayify (tuples...) -> 
-		not @op(((a, el) -> a is el), tuples...).some (b) -> b isnt true
+		tolerance = @tolerance
+		not @op(((a, el) -> Math.abs(a) - Math.abs(el) < tolerance), tuples...).some (b) -> b isnt true
 		
 	@max: @arrayify (points...) -> @op(((a, p) -> Math.max(a, p)), points...)
 	@min: @arrayify (points...) -> @op(((a, p) -> Math.min(a, p)), points...)
 	@average: @arrayify (points...) -> new @(@add(points...).map((p) -> p / points.length))
 	
+	@fix: (point) -> new @(@toFixed(point, 14).map (p) -> +p)
+	@toFixed: (point, n) -> new @(point.map (p) -> p.toFixed(n))
+	
 	@floor: (point) -> new @(point.map (p) -> Math.floor(p))
 	@ceil: (point) -> new @(point.map (p) -> Math.ceil(p))	
-	@round: (point) -> new @(point.map (p) -> Math.round(p))	
+	@round: (point) -> new @(point.map (p) -> Math.round(p))
 	@abs: (point) -> new @(point.map (p) -> Math.abs(p))	
 	
 	@floori: (point, i = 0) -> p = new @(point); p[i] = Math.floor(p[i]); p; 
@@ -86,7 +85,7 @@ module.exports = exports = class Tuple extends Array
 		else @constructor[method](@, tuples...)
 ), Tuple)
 
-[ "floor", "floori", "ceil", "ceili", "round", "roundi", "abs", "absi"
+[ "fix", "toFixed", "floor", "floori", "ceil", "ceili", "round", "roundi", "abs", "absi"
 ].forEach(((method) -> 
 	@::[method] = (i) -> @constructor[method](@, i)
 ), Tuple)

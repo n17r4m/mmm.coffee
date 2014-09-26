@@ -19,6 +19,7 @@ module.exports = exports = root = (options = {}) ->
 	require("./lib/Point"),
 	require("./lib/Vector"),
 	require("./lib/Arrow"),
-	require("./lib/Line")
+	require("./lib/Line"),
+	require("./lib/Matrix")
 
 ].forEach (classdef) -> root[classdef.name] = classdef

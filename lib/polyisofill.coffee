@@ -2,19 +2,19 @@
 # Functions
   
 unless typeof Function::property is 'function'
-	Object.defineProperty(Function, "property", {
+	Object.defineProperty(Function::, "property", {
 		value: (prop, desc) -> 
 			Object.defineProperty(@prototype, prop, desc)
 	})
 
 unless typeof Function::getter is 'function'
-	Object.defineProperty(Function, "getter", {
+	Object.defineProperty(Function::, "getter", {
 		value: (prop, get) -> 
 			Object.defineProperty(@prototype, prop, {get, configurable: false})
 	})
 
 unless typeof Function::setter is 'function'
-	Object.defineProperty(Function, "setter", {
+	Object.defineProperty(Function::, "setter", {
 		value: (prop, set) ->
 			Object.defineProperty(@prototype, prop, {set, configurable: true})
 	})
@@ -23,7 +23,7 @@ unless typeof Function::setter is 'function'
 # Arrays
 
 unless typeof Array::zip is 'function'
-	Object.defineProperty(Array.prototype, "zip", {
+	Object.defineProperty(Array::, "zip", {
 		value: (empty = null) ->
 			length = Math.max.apply(Math, @map((a) -> a.length))
 			zipped = []
