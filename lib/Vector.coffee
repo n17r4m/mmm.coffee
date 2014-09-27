@@ -9,26 +9,27 @@ module.exports = exports = class Vector extends Point
 	unit: -> @divide(@norm())
 
 	angle: (v = @constructor.standard(@length)) -> @constructor.angle(@, v)
-	
+
 	cross: (v = @) -> @constructor.cross(@, v)
-	
+
 	project: (v) -> @constructor.project(@, v)
 
 	parallel: (v) -> 
 		x = (s = @divide(v).deNaN()).max()
 		not s.some (t) => Math.abs(t) - Math.abs(x) > @constructor.tolerance
-		
-	
-	perpendicular: (v) -> -@constructor.tolerance < @dot(v) < @constructor.tolerance 
-	
-	perpendicularTo: (v) -> @constructor.perpendicularTo(@, v)
 
 	intersects: (v) -> not @parallel(v)
 
+	perpendicular: (v) -> -@constructor.tolerance < @dot(v) < @constructor.tolerance 
+
+	perpendicularTo: (v) -> @constructor.perpendicularTo(@, v)
+
 	hyperspace: -> throw new Error("NYI: Surface perpedicular to this vector")
 
+	@isVector: (v) -> v instanceof Vector
+
 	@norm: (v) -> @dist(v)
-	
+
 	@unit: (v) -> (new @(v)).unit()
 
 	@angle: (v, u) -> Math.acos(@dot(v, u) / (@norm(v) * @norm(u)))
@@ -50,14 +51,12 @@ module.exports = exports = class Vector extends Point
 		while p.length < u.length - 1
 			p.push(1)	
 		return p.unit()
-    
-		
+
 	@project: (a, x) ->
 		[a, x] = [new @(a), new @(x)]
 		if x.isZero() then return a.zero()
 		a.multiply(x.dot(a)/a.dot(a))
-		
-		
+
 	@standard: (dimensions = 1, axis = 1) ->
 		v = @zero(dimensions)
 		v[axis-1] = 1

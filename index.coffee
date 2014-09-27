@@ -15,15 +15,15 @@ module.exports = exports = root = (options = {}) ->
 		options.hitch[classname] = classdef
 	
 
-[ require("./lib/Tuple"),
+[
+	require("./lib/Tuple"),
 	require("./lib/Point"),
 	require("./lib/Vector"),
-	require("./lib/Arrow"),
 	require("./lib/Line"),
 	require("./lib/Matrix"),
 	require("./lib/Vertex"),
 	require("./lib/Polygon"),
+	require("./lib/Grid"),
 	require("./lib/Pack"),
 	require("./lib/Unpack")
-
 ].forEach (classdef) -> root[classdef.name] = classdef

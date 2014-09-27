@@ -43,7 +43,7 @@ module.exports = exports = class Point extends Tuple
 				[x, y] = [point[0] - around[0], point[1] - around[1]]
 				xRotated = Math.cos(radians)*x - Math.sin(radians)*y
 				yRotated = Math.sin(radians)*x + Math.cos(radians)*y
-				new @(xRotated + point[0], yRotated + point[1])		
+				(new @(xRotated + around[0], yRotated + around[1])).fix()
 			when 3 then throw new TypeError("NYI: >= 3D rotations")
 			when 4 then throw new TypeError("NYI: >= 4D rotations")
 			else throw new TypeError("NYI: >= 4D rotations")
@@ -53,5 +53,9 @@ module.exports = exports = class Point extends Tuple
 		@arrayify (points...) =>
 			normalized = points.map (point) => (new @(point)).normalize(norm)
 			if multi then normalized else normalized[0]
+
+
+
+
 
 

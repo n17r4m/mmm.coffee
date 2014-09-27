@@ -7,7 +7,7 @@ module.exports = exports = class Tuple extends Array
 		return @
 
 	zero: -> new @constructor(@map -> 0)
-	isZero: -> not @some (t) -> t > @constructor.tolerance
+	isZero: -> not @some (t) => t > @constructor.tolerance
 	deNaN: -> new @constructor(@map (t) -> if isNaN(t) then null else t)
 
 	toArray: -> @slice()
@@ -53,7 +53,9 @@ module.exports = exports = class Tuple extends Array
 
 	@equals: @arrayify (tuples...) -> 
 		tolerance = @tolerance
-		not @op(((a, el) -> Math.abs(a) - Math.abs(el) < tolerance), tuples...).some (b) -> b isnt true
+		not @op(((a, el) -> 
+			Math.abs(a) - Math.abs(el) < tolerance), tuples...).some (b) -> 
+				b isnt true
 		
 	@max: @arrayify (points...) -> @op(((a, p) -> Math.max(a, p)), points...)
 	@min: @arrayify (points...) -> @op(((a, p) -> Math.min(a, p)), points...)

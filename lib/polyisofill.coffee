@@ -41,19 +41,22 @@ unless typeof Array::zip is 'function'
 			length = Math.max.apply(Math, @map((a) -> a.length))
 			zipped = []
 			for i in [0..length-1]
-				zipped.push @reduce(((s, v) -> s.push(v[i]||empty); s), [])
+				zipped.push @reduce(((s, v) -> s.push(if v[i]? then v[i] else empty); s), [])
 			zipped
 	})
 
 unless typeof Array::remove is 'function'
 	Object.defineProperty(Array::, "remove", {
-		value: (element) ->
-			if (i = @indexOf(element)) >= 0 then @splice(i, 1)
+		value: (elements...) ->
+			removed = 0
+			elements.forEach (element) =>
+				if (i = @indexOf(element)) >= 0 then @splice(i, 1); removed++
+			removed
 	})
 
 unless typeof Array::insert is 'function'
 	Object.defineProperty(Array::, "insert", {
-		value: (i, elements...) -> @splice(i, 0, elements...)
+		value: (i, elements...) -> @splice(i, 0, elements...); i + elements.length
 	})
 
 unless typeof Array::replace is 'function'
