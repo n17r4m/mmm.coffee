@@ -22,6 +22,8 @@ module.exports = exports = root = (options = {}) ->
 	require("./lib/Line"),
 	require("./lib/Matrix"),
 	require("./lib/Vertex"),
-	require("./lib/Polygon")
+	require("./lib/Polygon"),
+	require("./lib/Pack"),
+	require("./lib/Unpack")
 
 ].forEach (classdef) -> root[classdef.name] = classdef

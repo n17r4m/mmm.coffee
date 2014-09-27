@@ -45,6 +45,22 @@ unless typeof Array::zip is 'function'
 			zipped
 	})
 
+unless typeof Array::remove is 'function'
+	Object.defineProperty(Array::, "remove", {
+		value: (element) ->
+			if (i = @indexOf(element)) >= 0 then @splice(i, 1)
+	})
+
+unless typeof Array::insert is 'function'
+	Object.defineProperty(Array::, "insert", {
+		value: (i, elements...) -> @splice(i, 0, elements...)
+	})
+
+unless typeof Array::replace is 'function'
+	Object.defineProperty(Array::, "replace", {
+		value: (i, elements = []) -> @splice(i, elements.length, elements...)
+	})
+
 
 # Strings
 

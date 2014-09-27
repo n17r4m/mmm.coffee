@@ -4,6 +4,12 @@ Vector = require("./Vector")
 
 module.exports = exports = class Arrow extends Vector
 	constructor: (A = new Point(), B = new Point()) ->
+	
+		###
+		@point = new Point(point)
+		super(vector)
+		###
+	
 		if Arrow.isArrow(A)
 			@point = new Point(A.point)
 			super(A.vector)
@@ -25,8 +31,6 @@ module.exports = exports = class Arrow extends Vector
 		else 
 			throw new Error("Unsupported Argument type(s)")
 		
-		@point = new Point(point)
-		super(vector)
 	
 	translate: (point) -> @point.add(point)
 	
