@@ -6,7 +6,7 @@ module.exports = exports = class Matrix extends Tuple
 	
 	@getter 'height', -> @length
 	@getter 'width', -> @[0].length
-	@getter 'size', -> "#{@width}x#{height}"
+	@getter 'size', -> "#{@width}x#{@height}"
 	
 	toArray: -> @map (row) -> row.toArray()
 	toString: -> "[#{@size} Matrix]"
@@ -25,13 +25,18 @@ module.exports = exports = class Matrix extends Tuple
 		else return new Tuple(mx.map (row) -> row[0])
 		
 	@rows: (mx) -> mx
-	@cols: (mx) -> cols = @col(mx, n) for n in [1...mx.length]
+	@cols: (mx) -> cols = @col(mx, n) for n in [1..mx.length]
 	
 	@add: (m1, m2) -> new @(m1.map (row, r) -> row.map (m, c) -> m + m2[r][c])
 	@subtract: (m1, m2) -> new @(m1.map (row, r) -> row.map (m, c) -> m - m2[r][c])
 	@multiply: (m1, m2) -> 
 		if Number.isNumber(m2) then new @(m1.map (row) -> row.map (m) -> m * m2)
 		else new @(m1.map (row) => @cols(m2).map (col) -> col.dot(row))
+				
+	@rank: (mx) -> @rref(mx).reduce(((rank, row) ->
+		#todo: count leading 1's in cols < col.length-1
+	), 0)
+		
 				
 	@rref: (mx) ->		
 		# https://github.com/substack/rref
