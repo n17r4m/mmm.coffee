@@ -17,6 +17,7 @@ module.exports = exports = root = (options = {}) ->
 
 [
 	require("./lib/Tuple"),
+	require("./lib/Can"),	
 	require("./lib/Point"),
 	require("./lib/Vector"),
 	require("./lib/Line"),

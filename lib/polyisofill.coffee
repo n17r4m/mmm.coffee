@@ -44,6 +44,16 @@ unless typeof Array::zip is 'function'
 				zipped.push @reduce(((s, v) -> s.push(if v[i]? then v[i] else empty); s), [])
 			zipped
 	})
+	
+unless typeof Array::shuffle is 'function'
+	Object.defineProperty(Array::, "shuffle", {
+		value: ->
+			currentIndex = @length
+			while 0 isnt currentIndex
+				randomIndex = Math.floor(Math.random() * currentIndex)
+				currentIndex--
+				[@[currentIndex], @[randomIndex]] = [@[randomIndex], @[currentIndex]]
+	})
 
 unless typeof Array::remove is 'function'
 	Object.defineProperty(Array::, "remove", {
