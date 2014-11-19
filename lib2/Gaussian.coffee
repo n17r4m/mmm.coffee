@@ -1,0 +1,3 @@
+
+class Gaussian extends Number
+	
