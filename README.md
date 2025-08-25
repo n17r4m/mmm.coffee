@@ -3,8 +3,7 @@ mmm.coffee
 
 Math, Matricies, and More
 
-
-Under construction.
+DO NOT USE. Student experiment.
 
 
 Static methods for immutability
