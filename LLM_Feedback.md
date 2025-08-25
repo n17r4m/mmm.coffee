@@ -1,4 +1,4 @@
-oh this is juicy old-school Coffee. alright Marty, here’s a no-BS review with surgical fixes. i’ll keep it tight, opinionated, and practical.
+
 
 # Big rocks (fix these first)
 
